@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.Tilemaps;
 
 public class CrossedBorders
@@ -17,7 +19,9 @@ public class Board : MonoBehaviour
     public Tilemap tilemap { get; private set; }
     public Figure activeFigure { get; private set; }
     public Tetromino nextTetromino { get; private set; }
+    public GameOverManager gameOverManager { get; private set; }
     public int score {  get; private set; }
+    public List<int> records { get; private set; }
 
     public TextMeshProUGUI textScore;
     public float defaultStepDelay = 1f;
@@ -39,8 +43,10 @@ public class Board : MonoBehaviour
     {
         tilemap = GetComponentInChildren<Tilemap>();
         activeFigure = GetComponentInChildren<Figure>();
+        gameOverManager = GetComponentInChildren<GameOverManager>();
         nextTetromino = GetRandomTetromino();
         score = 0;
+        records = RecordsManager.LoadRecords();
     }
 
     private void Start()
@@ -95,13 +101,14 @@ public class Board : MonoBehaviour
 
     public void GameOver()
     {
-        print("GAME OVER");
-        tilemap.ClearAllTiles();
-        GenNextTetromino();
-        SpawnFigure();
-        activeFigure.stepDelay = defaultStepDelay;
-        score = 0;
-        ShowScore();
+        int record = records.FirstOrDefault();
+        if (score > record)
+        {
+            record = score;
+            records.Insert(0, record);
+            RecordsManager.SaveRecords(records);
+        }
+        gameOverManager.ShowPanel(score, record);
     }
 
     public void Set(Figure figure)
