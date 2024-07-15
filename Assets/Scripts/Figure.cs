@@ -41,8 +41,7 @@ public class Figure : MonoBehaviour
             LeftRotate();
         if (Input.GetKeyDown(KeyCode.Space))
             HardDrop();
-        if (Time.time > moveTime)
-            HandleMoveInputs();
+        HandleMoveInputs();
         if (Time.time > stepTime)
             Step();
 
@@ -51,12 +50,31 @@ public class Figure : MonoBehaviour
 
     private void HandleMoveInputs()
     {
-        if (Input.GetKey(KeyCode.S))
+        if (Input.GetKeyDown(KeyCode.S))
+        {
             Step();
-        if (Input.GetKey(KeyCode.A))
+            moveTime += moveDelay;
+        }
+        if (Input.GetKeyDown(KeyCode.A))
+        {
             Move(Vector2Int.left);
-        else if (Input.GetKey(KeyCode.D))
+            moveTime += moveDelay;
+        }
+        else if (Input.GetKeyDown(KeyCode.D))
+        {
             Move(Vector2Int.right);
+            moveTime += moveDelay;
+        }
+
+        if (Time.time > moveTime)
+        {
+            if (Input.GetKey(KeyCode.S))
+                Step();
+            if (Input.GetKey(KeyCode.A))
+                Move(Vector2Int.left);
+            else if (Input.GetKey(KeyCode.D))
+                Move(Vector2Int.right);
+        }
     }
 
     private void Step()
